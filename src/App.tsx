@@ -21,6 +21,11 @@ function App() {
     { value: 80, label: '80%' },
   ]
 
+  /***
+   * Function that asyncronously calls thecolorapi using hsl format to grab 36 possible colors with given saturation and lightness.
+   * Hue is taken in steps of 10s to lower needed calls.
+   * Colors are then filtered to remove reoccurring color names since not all hsl colors are unique.
+  */ 
   const getColorHandler = useCallback(async () => {
     const getColors = []
     for (let i=1; i<=36; i++) {
@@ -29,7 +34,9 @@ function App() {
       getColors.push({hsl: resData.hsl?.value, color: resData.rgb?.value, name: resData.name?.value, image: resData.image?.bare});
     }
 
-    setColors(getColors);
+    const filteredColors = [...new Map(getColors.map(color => [color.name, color])).values()]
+    
+    setColors(filteredColors);
   }, [lightness, saturation])
   
 
@@ -39,26 +46,30 @@ function App() {
 
   return (
     <>
-      <Container m={4}>
-        <Title order={2}>Saturation</Title>
-        <Slider
-          color="blue"
-          size="xl"
-          marks={sliderMarks}
-          value={saturation}
-          onChange={setSaturation}
-        />
-        <p>{saturation}</p>
+      <Container m={4} size="80rem">
+        <div style={{paddingBottom: "30px"}} >
 
-        <Title order={2}>Lightness</Title>
-        <Slider
-          color="red"
-          size="xl"
-          marks={sliderMarks}
-          value={lightness}
-          onChange={setLightness}
-        /><p>{lightness}</p>
-        
+          <Title order={2}>Saturation: {saturation}</Title>
+          <Slider
+            color="blue"
+            size="xl"
+            marks={sliderMarks}
+            value={saturation}
+            onChange={setSaturation}
+             w={'rem(80)'}
+          />
+        </div>
+
+        <div style={{paddingBottom: "30px"}}>
+          <Title order={2}>Lightness: {lightness}</Title>
+          <Slider
+            color="red"
+            size="xl"
+            marks={sliderMarks}
+            value={lightness}
+            onChange={setLightness}
+          />
+        </div>
 
         <Grid>
           {
